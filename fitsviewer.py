@@ -154,6 +154,7 @@ class FitsViewer(QMainWindow):
         self.ui.splitter_3.setSizes([200, 500])
 
         self.ui.plotButton.pressed.connect(self.plotSelection)
+        self.ui.contents.pressed.connect(self.plotSelection)
 
     def hduSelected(self, item):
         hduEntry = self.hduListModel.hduEntryForIndex(item)
@@ -164,7 +165,6 @@ class FitsViewer(QMainWindow):
         self.ui.contents.setModel(FitsDataModel(hduEntry))
         self.ui.contents.resizeColumnsToContents()
         self.ui.contents.verticalHeader().setDefaultSectionSize(20)
-        self.ui.contents.pressed.connect(self.plotSelection)
 
     def plotSelection(self):
         if not QApplication.mouseButtons() & Qt.RightButton and not isinstance(self.sender(), QPushButton):
