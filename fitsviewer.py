@@ -1,15 +1,19 @@
 from PyQt4.QtGui import QMainWindow
 from PyQt4.QtGui import QApplication
-from PyQt4.QtGui import QFileSystemModel, QTableView, QColor, QFont
+from PyQt4.QtGui import QFileSystemModel, QTableView, QColor, QFont, QPushButton
 
-from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
+from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QObject
 
 import pyfits
+import matplotlib.pyplot as plt
+from numpy import array as nparray, ndarray
 
 import mainwindow
 
 import sys
 import os
+
+RAW_DATA_ROLE = Qt.UserRole + 1
 
 class FitsHeaderListModel(QAbstractTableModel):
     def __init__(self, fileUrl):
@@ -116,6 +120,8 @@ class FitsDataModel(QAbstractTableModel):
         if role == Qt.DisplayRole:
             data = self.fitsdata[index.row()][index.column()]
             return str(data)
+        if role == RAW_DATA_ROLE:
+            return self.fitsdata[index.row()][index.column()]
 
 class FitsViewer(QMainWindow):
     def __init__(self):
@@ -147,6 +153,8 @@ class FitsViewer(QMainWindow):
         self.ui.splitter_2.setSizes([200, 500])
         self.ui.splitter_3.setSizes([200, 500])
 
+        self.ui.plotButton.pressed.connect(self.plotSelection)
+
     def hduSelected(self, item):
         hduEntry = self.hduListModel.hduEntryForIndex(item)
         self.ui.header.setModel(FitsHeaderModel(hduEntry))
@@ -156,6 +164,31 @@ class FitsViewer(QMainWindow):
         self.ui.contents.setModel(FitsDataModel(hduEntry))
         self.ui.contents.resizeColumnsToContents()
         self.ui.contents.verticalHeader().setDefaultSectionSize(20)
+        self.ui.contents.pressed.connect(self.plotSelection)
+
+    def plotSelection(self):
+        if not QApplication.mouseButtons() & Qt.RightButton and not isinstance(self.sender(), QPushButton):
+            return
+        plt.close()
+
+        selection = self.ui.contents.selectionModel().selectedIndexes()
+
+        def getData(index):
+            return self.ui.contents.model().data(index, RAW_DATA_ROLE)
+
+        if len(selection) == 1:
+            data = getData(selection[0])
+            plt.plot(data)
+        else:
+            dataParts = [getData(index) for index in selection]
+            if False not in [isinstance(p, ndarray) for p in dataParts]:
+                # all items are arrays -> plot as curves
+                for item in dataParts:
+                    plt.plot(item)
+            else:
+                plt.plot(nparray(dataParts))
+
+        plt.show()
 
     def fileSelected(self):
         files = self.ui.files.selectionModel().selectedIndexes()
@@ -170,10 +203,12 @@ class FitsViewer(QMainWindow):
         self.ui.sections.setModel(self.hduListModel)
         self.ui.sections.resizeColumnsToContents()
         self.ui.sections.selectionModel().currentChanged.connect(self.hduSelected)
+        self.setWindowTitle("pyfv: {0}".format(self.currentFile))
 
     def pathChanged(self):
         index = self.fileModel.setRootPath(self.ui.url.text())
         self.ui.files.setRootIndex(index)
+        self.setWindowTitle("pyfv: {0}".format(self.ui.url.text()))
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

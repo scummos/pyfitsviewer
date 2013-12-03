@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Tue Dec  3 22:20:09 2013
+# Created: Tue Dec  3 23:12:46 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -69,8 +69,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addWidget(self.sections)
         self.dataGroup = QtGui.QGroupBox(self.splitter_3)
         self.dataGroup.setObjectName(_fromUtf8("dataGroup"))
-        self.horizontalLayout_3 = QtGui.QHBoxLayout(self.dataGroup)
-        self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
+        self.verticalLayout_6 = QtGui.QVBoxLayout(self.dataGroup)
+        self.verticalLayout_6.setObjectName(_fromUtf8("verticalLayout_6"))
         self.splitter_2 = QtGui.QSplitter(self.dataGroup)
         self.splitter_2.setOrientation(QtCore.Qt.Vertical)
         self.splitter_2.setObjectName(_fromUtf8("splitter_2"))
@@ -90,13 +90,21 @@ class Ui_MainWindow(object):
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.layoutWidget1)
         self.verticalLayout_2.setMargin(0)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
+        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
         self.label_2 = QtGui.QLabel(self.layoutWidget1)
         self.label_2.setObjectName(_fromUtf8("label_2"))
-        self.verticalLayout_2.addWidget(self.label_2)
+        self.horizontalLayout_2.addWidget(self.label_2)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem)
+        self.plotButton = QtGui.QPushButton(self.layoutWidget1)
+        self.plotButton.setObjectName(_fromUtf8("plotButton"))
+        self.horizontalLayout_2.addWidget(self.plotButton)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.contents = QtGui.QTableView(self.layoutWidget1)
         self.contents.setObjectName(_fromUtf8("contents"))
         self.verticalLayout_2.addWidget(self.contents)
-        self.horizontalLayout_3.addWidget(self.splitter_2)
+        self.verticalLayout_6.addWidget(self.splitter_2)
         self.verticalLayout_3.addWidget(self.splitter_3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
@@ -112,11 +120,11 @@ class Ui_MainWindow(object):
         self.actionOpen.setObjectName(_fromUtf8("actionOpen"))
         self.actionQuit = QtGui.QAction(MainWindow)
         self.actionQuit.setObjectName(_fromUtf8("actionQuit"))
-        self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionQuit)
         self.menubar.addAction(self.menuFile.menuAction())
 
         self.retranslateUi(MainWindow)
+        QtCore.QObject.connect(self.actionQuit, QtCore.SIGNAL(_fromUtf8("triggered()")), MainWindow.close)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -126,6 +134,7 @@ class Ui_MainWindow(object):
         self.dataGroup.setTitle(_translate("MainWindow", "File contents", None))
         self.label.setText(_translate("MainWindow", "Header", None))
         self.label_2.setText(_translate("MainWindow", "Data", None))
+        self.plotButton.setText(_translate("MainWindow", "Plot selected", None))
         self.menuFile.setTitle(_translate("MainWindow", "File", None))
         self.actionOpen.setText(_translate("MainWindow", "Open", None))
         self.actionQuit.setText(_translate("MainWindow", "Quit", None))
