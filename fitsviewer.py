@@ -1,8 +1,9 @@
 from PyQt4.QtGui import QMainWindow
 from PyQt4.QtGui import QApplication
 from PyQt4.QtGui import QFileSystemModel, QTableView, QColor, QFont, QPushButton
+from PyQt4.QtGui import QSortFilterProxyModel
 
-from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QObject
+from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QObject, QRegExp
 
 import pyfits
 import matplotlib.pyplot as plt
@@ -166,11 +167,17 @@ class FitsViewer(QMainWindow):
         self.ui.plotButton.pressed.connect(self.plotSelection)
         self.ui.contents.pressed.connect(self.plotSelection)
 
+        self.ui.filterHeader.textChanged.connect(self.headerFilterChanged)
+
     def hduSelected(self, item):
         hduEntry = self.hduListModel.hduEntryForIndex(item)
-        self.ui.header.setModel(FitsHeaderModel(hduEntry))
+        self.hduHeaderProxyModel = QSortFilterProxyModel()
+        self.hduHeaderProxyModel.setSourceModel(FitsHeaderModel(hduEntry))
+        self.hduHeaderProxyModel.setFilterKeyColumn(0)
+        self.ui.header.setModel(self.hduHeaderProxyModel)
         self.ui.header.resizeColumnsToContents()
         self.ui.header.verticalHeader().setDefaultSectionSize(20)
+        self.headerFilterChanged(self.ui.filterHeader.text())
 
         self.ui.contents.setModel(FitsDataModel(hduEntry))
         self.ui.contents.resizeColumnsToContents()
@@ -199,6 +206,9 @@ class FitsViewer(QMainWindow):
                 plt.plot(nparray(dataParts))
 
         plt.show()
+
+    def headerFilterChanged(self, newText):
+        self.hduHeaderProxyModel.setFilterRegExp(QRegExp(newText, Qt.CaseInsensitive, QRegExp.WildcardUnix))
 
     def fileSelected(self):
         files = self.ui.files.selectionModel().selectedIndexes()

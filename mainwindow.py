@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Tue Dec  3 23:12:46 2013
+# Created: Wed Dec  4 08:56:46 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -79,9 +79,17 @@ class Ui_MainWindow(object):
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.layoutWidget)
         self.verticalLayout_5.setMargin(0)
         self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
+        self.horizontalLayout_3 = QtGui.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
         self.label = QtGui.QLabel(self.layoutWidget)
         self.label.setObjectName(_fromUtf8("label"))
-        self.verticalLayout_5.addWidget(self.label)
+        self.horizontalLayout_3.addWidget(self.label)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem)
+        self.filterHeader = QtGui.QLineEdit(self.layoutWidget)
+        self.filterHeader.setObjectName(_fromUtf8("filterHeader"))
+        self.horizontalLayout_3.addWidget(self.filterHeader)
+        self.verticalLayout_5.addLayout(self.horizontalLayout_3)
         self.header = QtGui.QTableView(self.layoutWidget)
         self.header.setObjectName(_fromUtf8("header"))
         self.verticalLayout_5.addWidget(self.header)
@@ -95,8 +103,8 @@ class Ui_MainWindow(object):
         self.label_2 = QtGui.QLabel(self.layoutWidget1)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.horizontalLayout_2.addWidget(self.label_2)
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem)
+        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem1)
         self.plotButton = QtGui.QPushButton(self.layoutWidget1)
         self.plotButton.setObjectName(_fromUtf8("plotButton"))
         self.horizontalLayout_2.addWidget(self.plotButton)
@@ -133,6 +141,7 @@ class Ui_MainWindow(object):
         self.sectionsGroup.setTitle(_translate("MainWindow", "Sections in file", None))
         self.dataGroup.setTitle(_translate("MainWindow", "File contents", None))
         self.label.setText(_translate("MainWindow", "Header", None))
+        self.filterHeader.setPlaceholderText(_translate("MainWindow", "Filter...", None))
         self.label_2.setText(_translate("MainWindow", "Data", None))
         self.plotButton.setText(_translate("MainWindow", "Plot selected", None))
         self.menuFile.setTitle(_translate("MainWindow", "File", None))
