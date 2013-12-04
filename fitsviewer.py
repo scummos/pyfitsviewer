@@ -53,6 +53,16 @@ class FitsHeaderListModel(QAbstractTableModel):
         if role == Qt.ForegroundRole:
             if index.column() == 1:
                 return QColor("#8F8F8F")
+            if index.column() == 0:
+                entry = str(self.hdulist[index.row()].name)
+                if entry.find("ARRAYDATA") != -1:
+                    return QColor("#880064")
+                if entry.find("DATAPAR") != -1:
+                    return QColor("#007BE0")
+                if entry.find("MONITOR") != -1:
+                    return QColor("#004D8C")
+                if entry.find("SCAN") != -1:
+                    return QColor("#881900")
         if role == Qt.FontRole:
             if index.column() == 0:
                 f = QFont()
