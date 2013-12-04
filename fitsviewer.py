@@ -226,6 +226,8 @@ class FitsViewer(QMainWindow):
         self.ui.sections.setModel(self.hduListModel)
         self.ui.sections.resizeColumnsToContents()
         self.ui.sections.selectionModel().currentChanged.connect(self.hduSelected)
+        self.ui.header.setModel(None)
+        self.ui.contents.setModel(None)
         self.setWindowTitle("pyfv: {0}".format(self.currentFile))
 
     def pathChanged(self):
