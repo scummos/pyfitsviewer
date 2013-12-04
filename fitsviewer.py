@@ -39,6 +39,9 @@ class FitsHeaderListModel(QAbstractTableModel):
                 return "Name"
             if section == 1:
                 return "Shape"
+        if role == Qt.DisplayRole and orientation == Qt.Vertical:
+            # zero indexing
+            return QAbstractTableModel.headerData(self, section, orientation, role).toInt()[0] - 1
         return QAbstractTableModel.headerData(self, section, orientation, role)
 
     def data(self, index, role):
