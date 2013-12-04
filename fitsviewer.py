@@ -195,12 +195,28 @@ class FitsViewer(QMainWindow):
 
         def getData(index):
             return self.ui.contents.model().data(index, RAW_DATA_ROLE)
+        def getLabel(column):
+            return self.ui.contents.model().headerData(column, Qt.Horizontal, Qt.DisplayRole)
 
+        distinctColsSelected = {item.column() for item in selection}
         if len(selection) == 1:
-            data = getData(selection[0])
-            plt.plot(data)
+            plt.ylabel(getLabel(selection[0].column()))
+            plt.plot(getData(selection[0]))
+        elif len(distinctColsSelected) == 2:
+            # plot first as x, second as y
+            key_col, value_col = distinctColsSelected
+            keys = [getData(index) for index in selection if index.column() == key_col]
+            values = [getData(index) for index in selection if index.column() == value_col]
+            if ndarray in map(type, keys) or ndarray in map(type, values):
+                print "Sorry, don't know how to plot that"
+                return
+            plt.xlabel(getLabel(key_col))
+            plt.ylabel(getLabel(value_col))
+            plt.plot(keys, values)
         else:
             dataParts = [getData(index) for index in selection]
+            label = ", ".join({getLabel(index.column()) for index in selection})
+            plt.ylabel(label)
             if False not in [isinstance(p, ndarray) for p in dataParts]:
                 # all items are arrays -> plot as curves
                 for item in dataParts:
