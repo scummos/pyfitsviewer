@@ -17,9 +17,9 @@ import os
 RAW_DATA_ROLE = Qt.UserRole + 1
 
 class FitsHeaderListModel(QAbstractTableModel):
-    def __init__(self, fileUrl):
+    def __init__(self, hdulist):
         QAbstractTableModel.__init__(self)
-        self.hdulist = pyfits.open(str(fileUrl))
+        self.hdulist = hdulist
 
     def rowCount(self, parent):
         try:
@@ -171,6 +171,10 @@ class FitsViewer(QMainWindow):
         self.ui.contents.pressed.connect(self.plotSelection)
 
         self.ui.filterHeader.textChanged.connect(self.headerFilterChanged)
+        self.ui.indicesButton.clicked.connect(self.indicesButtonClicked)
+
+    def indicesButtonClicked(self):
+        self.ui.indicesLineEdit.setText("*")
 
     def hduSelected(self, item):
         hduEntry = self.hduListModel.hduEntryForIndex(item)
@@ -193,8 +197,15 @@ class FitsViewer(QMainWindow):
 
         selection = self.ui.contents.selectionModel().selectedIndexes()
 
+        arrayFields = self.ui.indicesLineEdit.text()
         def getData(index):
-            return self.ui.contents.model().data(index, RAW_DATA_ROLE)
+            data = self.ui.contents.model().data(index, RAW_DATA_ROLE)
+            if type(data) == ndarray and arrayFields != "*":
+                try:
+                    return data[int(arrayFields)]
+                except ValueError:
+                    self.ui.statusbar.showMessage("whops, non-integer in array index field", 10000)
+            return data
         def getLabel(column):
             return self.ui.contents.model().headerData(column, Qt.Horizontal, Qt.DisplayRole)
 
@@ -208,7 +219,7 @@ class FitsViewer(QMainWindow):
             keys = [getData(index) for index in selection if index.column() == key_col]
             values = [getData(index) for index in selection if index.column() == value_col]
             if ndarray in map(type, keys) or ndarray in map(type, values):
-                print "Sorry, don't know how to plot that"
+                self.ui.statusbar.showMessage("Sorry, don't know how to plot that", 10000)
                 return
             plt.xlabel(getLabel(key_col))
             plt.ylabel(getLabel(value_col))
@@ -237,7 +248,12 @@ class FitsViewer(QMainWindow):
             print "No file selected, huh?"
             return
         self.currentFile = self.ui.url.text() + "/" + filename
-        self.hduListModel = FitsHeaderListModel(self.currentFile)
+        try:
+            hdulist = pyfits.open(str(self.currentFile))
+        except IOError as e:
+            self.ui.statusbar.showMessage("Failed to open {0}: {1}".format(self.currentFile, str(e)), 10000)
+            return
+        self.hduListModel = FitsHeaderListModel(hdulist)
 
         self.ui.sections.setModel(self.hduListModel)
         self.ui.sections.resizeColumnsToContents()

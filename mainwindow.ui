@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>846</width>
+    <height>601</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -139,6 +139,29 @@
                </spacer>
               </item>
               <item>
+               <widget class="QPushButton" name="indicesButton">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use this index when the selected data field contains an array.&lt;/p&gt;&lt;p&gt;* to leave array untouched.&lt;/p&gt;&lt;p&gt;Click to reset to &amp;quot;*&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Indices:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="indicesLineEdit">
+                <property name="maximumSize">
+                 <size>
+                  <width>25</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>*</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QPushButton" name="plotButton">
                 <property name="text">
                  <string>Plot selected</string>
@@ -165,7 +188,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>846</width>
      <height>23</height>
     </rect>
    </property>

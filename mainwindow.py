@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Wed Dec  4 10:35:48 2013
+# Created: Wed Dec  4 22:59:34 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(800, 600)
+        MainWindow.resize(846, 601)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.centralwidget)
@@ -105,6 +105,13 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.addWidget(self.label_2)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
+        self.indicesButton = QtGui.QPushButton(self.layoutWidget1)
+        self.indicesButton.setObjectName(_fromUtf8("indicesButton"))
+        self.horizontalLayout_2.addWidget(self.indicesButton)
+        self.indicesLineEdit = QtGui.QLineEdit(self.layoutWidget1)
+        self.indicesLineEdit.setMaximumSize(QtCore.QSize(25, 16777215))
+        self.indicesLineEdit.setObjectName(_fromUtf8("indicesLineEdit"))
+        self.horizontalLayout_2.addWidget(self.indicesLineEdit)
         self.plotButton = QtGui.QPushButton(self.layoutWidget1)
         self.plotButton.setObjectName(_fromUtf8("plotButton"))
         self.horizontalLayout_2.addWidget(self.plotButton)
@@ -116,7 +123,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addWidget(self.splitter_3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 846, 23))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -143,6 +150,9 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Header", None))
         self.filterHeader.setPlaceholderText(_translate("MainWindow", "Filter...", None))
         self.label_2.setText(_translate("MainWindow", "Data", None))
+        self.indicesButton.setToolTip(_translate("MainWindow", "<html><head/><body><p>Use this index when the selected data field contains an array.</p><p>* to leave array untouched.</p><p>Click to reset to &quot;*&quot;.</p></body></html>", None))
+        self.indicesButton.setText(_translate("MainWindow", "Indices:", None))
+        self.indicesLineEdit.setText(_translate("MainWindow", "*", None))
         self.plotButton.setText(_translate("MainWindow", "Plot selected", None))
         self.menuFile.setTitle(_translate("MainWindow", "File", None))
         self.actionOpen.setText(_translate("MainWindow", "Open", None))
