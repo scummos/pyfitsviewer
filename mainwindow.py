@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Wed Dec  4 08:56:46 2013
+# Created: Wed Dec  4 10:35:48 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -139,7 +139,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.fileGroup.setTitle(_translate("MainWindow", "Select file", None))
         self.sectionsGroup.setTitle(_translate("MainWindow", "Sections in file", None))
-        self.dataGroup.setTitle(_translate("MainWindow", "File contents", None))
+        self.dataGroup.setTitle(_translate("MainWindow", "Section contents", None))
         self.label.setText(_translate("MainWindow", "Header", None))
         self.filterHeader.setPlaceholderText(_translate("MainWindow", "Filter...", None))
         self.label_2.setText(_translate("MainWindow", "Data", None))

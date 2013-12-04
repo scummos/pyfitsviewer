@@ -68,7 +68,7 @@
       </widget>
       <widget class="QGroupBox" name="dataGroup">
        <property name="title">
-        <string>File contents</string>
+        <string>Section contents</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
