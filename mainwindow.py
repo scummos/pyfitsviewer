@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Wed Dec  4 22:59:34 2013
+# Created: Thu Dec  5 17:53:54 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -87,8 +87,12 @@ class Ui_MainWindow(object):
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem)
         self.filterHeader = QtGui.QLineEdit(self.layoutWidget)
+        self.filterHeader.setMaximumSize(QtCore.QSize(200, 16777215))
         self.filterHeader.setObjectName(_fromUtf8("filterHeader"))
         self.horizontalLayout_3.addWidget(self.filterHeader)
+        self.clearHeaderFilter = QtGui.QPushButton(self.layoutWidget)
+        self.clearHeaderFilter.setObjectName(_fromUtf8("clearHeaderFilter"))
+        self.horizontalLayout_3.addWidget(self.clearHeaderFilter)
         self.verticalLayout_5.addLayout(self.horizontalLayout_3)
         self.header = QtGui.QTableView(self.layoutWidget)
         self.header.setObjectName(_fromUtf8("header"))
@@ -98,6 +102,9 @@ class Ui_MainWindow(object):
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.layoutWidget1)
         self.verticalLayout_2.setMargin(0)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
+        self.verticalLayout_7 = QtGui.QVBoxLayout()
+        self.verticalLayout_7.setObjectName(_fromUtf8("verticalLayout_7"))
+        self.verticalLayout_2.addLayout(self.verticalLayout_7)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
         self.label_2 = QtGui.QLabel(self.layoutWidget1)
@@ -115,6 +122,15 @@ class Ui_MainWindow(object):
         self.plotButton = QtGui.QPushButton(self.layoutWidget1)
         self.plotButton.setObjectName(_fromUtf8("plotButton"))
         self.horizontalLayout_2.addWidget(self.plotButton)
+        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem2)
+        self.filterData = QtGui.QLineEdit(self.layoutWidget1)
+        self.filterData.setMaximumSize(QtCore.QSize(200, 16777215))
+        self.filterData.setObjectName(_fromUtf8("filterData"))
+        self.horizontalLayout_2.addWidget(self.filterData)
+        self.clearDataFilter = QtGui.QPushButton(self.layoutWidget1)
+        self.clearDataFilter.setObjectName(_fromUtf8("clearDataFilter"))
+        self.horizontalLayout_2.addWidget(self.clearDataFilter)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.contents = QtGui.QTableView(self.layoutWidget1)
         self.contents.setObjectName(_fromUtf8("contents"))
@@ -140,6 +156,8 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QObject.connect(self.actionQuit, QtCore.SIGNAL(_fromUtf8("triggered()")), MainWindow.close)
+        QtCore.QObject.connect(self.clearDataFilter, QtCore.SIGNAL(_fromUtf8("clicked()")), self.filterData.clear)
+        QtCore.QObject.connect(self.clearHeaderFilter, QtCore.SIGNAL(_fromUtf8("clicked()")), self.filterHeader.clear)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -149,11 +167,14 @@ class Ui_MainWindow(object):
         self.dataGroup.setTitle(_translate("MainWindow", "Section contents", None))
         self.label.setText(_translate("MainWindow", "Header", None))
         self.filterHeader.setPlaceholderText(_translate("MainWindow", "Filter...", None))
+        self.clearHeaderFilter.setText(_translate("MainWindow", "Clear", None))
         self.label_2.setText(_translate("MainWindow", "Data", None))
         self.indicesButton.setToolTip(_translate("MainWindow", "<html><head/><body><p>Use this index when the selected data field contains an array.</p><p>* to leave array untouched.</p><p>Click to reset to &quot;*&quot;.</p></body></html>", None))
         self.indicesButton.setText(_translate("MainWindow", "Indices:", None))
         self.indicesLineEdit.setText(_translate("MainWindow", "*", None))
         self.plotButton.setText(_translate("MainWindow", "Plot selected", None))
+        self.filterData.setPlaceholderText(_translate("MainWindow", "Filter...", None))
+        self.clearDataFilter.setText(_translate("MainWindow", "Clear", None))
         self.menuFile.setTitle(_translate("MainWindow", "File", None))
         self.actionOpen.setText(_translate("MainWindow", "Open", None))
         self.actionQuit.setText(_translate("MainWindow", "Quit", None))

@@ -102,8 +102,21 @@
               </item>
               <item>
                <widget class="QLineEdit" name="filterHeader">
+                <property name="maximumSize">
+                 <size>
+                  <width>200</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
                 <property name="placeholderText">
                  <string>Filter...</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="clearHeaderFilter">
+                <property name="text">
+                 <string>Clear</string>
                 </property>
                </widget>
               </item>
@@ -116,6 +129,9 @@
           </widget>
           <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_7"/>
+            </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
@@ -165,6 +181,39 @@
                <widget class="QPushButton" name="plotButton">
                 <property name="text">
                  <string>Plot selected</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="filterData">
+                <property name="maximumSize">
+                 <size>
+                  <width>200</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="placeholderText">
+                 <string>Filter...</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="clearDataFilter">
+                <property name="text">
+                 <string>Clear</string>
                 </property>
                </widget>
               </item>
@@ -227,6 +276,38 @@
     <hint type="destinationlabel">
      <x>399</x>
      <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clearDataFilter</sender>
+   <signal>clicked()</signal>
+   <receiver>filterData</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>778</x>
+     <y>332</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>666</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clearHeaderFilter</sender>
+   <signal>clicked()</signal>
+   <receiver>filterHeader</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>778</x>
+     <y>84</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>643</x>
+     <y>83</y>
     </hint>
    </hints>
   </connection>

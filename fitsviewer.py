@@ -3,7 +3,7 @@ from PyQt4.QtGui import QApplication
 from PyQt4.QtGui import QFileSystemModel, QTableView, QColor, QFont, QPushButton
 from PyQt4.QtGui import QSortFilterProxyModel
 
-from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QObject, QRegExp
+from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QObject, QRegExp, QString, QTimer
 
 import pyfits
 import matplotlib.pyplot as plt
@@ -137,6 +137,37 @@ class FitsDataModel(QAbstractTableModel):
         if role == RAW_DATA_ROLE:
             return self.fitsdata[index.row()][index.column()]
 
+class DataSortFilterProxyModel(QSortFilterProxyModel):
+    def __init__(self):
+        QSortFilterProxyModel.__init__(self)
+        self.strColumns = []
+        self.filterString = str()
+
+    def filterAcceptsColumn(self, source_column, source_parent):
+        return True
+
+    def changeFilter(self, newFilter):
+        print "filter changed:", newFilter
+        self.filterString = newFilter
+        self.invalidateFilter()
+
+    def filterAcceptsRow(self, source_row, source_parent):
+        if not len(self.filterString):
+            return True
+
+        if len(self.strColumns) == 0:
+            for column in range(self.sourceModel().columnCount(QModelIndex())):
+                index = self.sourceModel().index(0, column, QModelIndex())
+                if isinstance(self.sourceModel().data(index, RAW_DATA_ROLE), str):
+                    self.strColumns.append(column)
+
+        for column in self.strColumns:
+            index = self.sourceModel().index(source_row, column, source_parent)
+            data = str(self.sourceModel().data(index, RAW_DATA_ROLE))
+            if data.find(self.filterString) != -1:
+                return True
+        return False
+
 class FitsViewer(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
@@ -171,7 +202,13 @@ class FitsViewer(QMainWindow):
         self.ui.contents.pressed.connect(self.plotSelection)
 
         self.ui.filterHeader.textChanged.connect(self.headerFilterChanged)
+        self.ui.filterData.textChanged.connect(self.dataFilterChanged)
         self.ui.indicesButton.clicked.connect(self.indicesButtonClicked)
+
+        self.dataFilterTimer = QTimer()
+        self.dataFilterTimer.setSingleShot(True)
+        self.dataFilterTimer.setInterval(300)
+        self.dataFilterTimer.timeout.connect(self.changeDataFilter)
 
     def indicesButtonClicked(self):
         self.ui.indicesLineEdit.setText("*")
@@ -186,7 +223,9 @@ class FitsViewer(QMainWindow):
         self.ui.header.verticalHeader().setDefaultSectionSize(20)
         self.headerFilterChanged(self.ui.filterHeader.text())
 
-        self.ui.contents.setModel(FitsDataModel(hduEntry))
+        self.hduDataProxyModel = DataSortFilterProxyModel()
+        self.hduDataProxyModel.setSourceModel(FitsDataModel(hduEntry))
+        self.ui.contents.setModel(self.hduDataProxyModel)
         self.ui.contents.resizeColumnsToContents()
         self.ui.contents.verticalHeader().setDefaultSectionSize(20)
 
@@ -199,7 +238,8 @@ class FitsViewer(QMainWindow):
 
         arrayFields = self.ui.indicesLineEdit.text()
         def getData(index):
-            data = self.ui.contents.model().data(index, RAW_DATA_ROLE)
+            index = self.hduDataProxyModel.mapToSource(index)
+            data = self.hduDataProxyModel.sourceModel().data(index, RAW_DATA_ROLE)
             if type(data) == ndarray and arrayFields != "*":
                 try:
                     return data[int(arrayFields)]
@@ -207,7 +247,7 @@ class FitsViewer(QMainWindow):
                     self.ui.statusbar.showMessage("whops, non-integer in array index field", 10000)
             return data
         def getLabel(column):
-            return self.ui.contents.model().headerData(column, Qt.Horizontal, Qt.DisplayRole)
+            return str(self.hduDataProxyModel.sourceModel().headerData(column, Qt.Horizontal, Qt.DisplayRole))
 
         distinctColsSelected = {item.column() for item in selection}
         if len(selection) == 1:
@@ -239,6 +279,13 @@ class FitsViewer(QMainWindow):
 
     def headerFilterChanged(self, newText):
         self.hduHeaderProxyModel.setFilterRegExp(QRegExp(newText, Qt.CaseInsensitive, QRegExp.WildcardUnix))
+
+    def dataFilterChanged(self, newText):
+        self.dataFilterTimer.text = newText
+        self.dataFilterTimer.start()
+
+    def changeDataFilter(self):
+        self.hduDataProxyModel.changeFilter(self.dataFilterTimer.text)
 
     def fileSelected(self):
         files = self.ui.files.selectionModel().selectedIndexes()
