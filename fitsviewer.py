@@ -180,8 +180,8 @@ class FitsViewer(QMainWindow):
         if len(sys.argv) == 2 and os.path.isfile(sys.argv[1]):
             components = sys.argv[1].split('/')
             startDir = '/'.join(components[:-1])
-            self.preselectFile = components[-1]
-        elif len(sys.argv) and os.path.isdir(sys.argv[1]):
+            self.preselectFile = sys.argv[1]
+        elif len(sys.argv) == 2 and os.path.isdir(sys.argv[1]):
             startDir = sys.argv[1]
             self.preselectFile = None
         else:
@@ -232,8 +232,8 @@ class FitsViewer(QMainWindow):
         if self.preselectFile is None:
             return
         # preselect the given file
-        self.ui.files.selectionModel().select(self.fileModel.index(self.preselectFile),
-                                              QItemSelectionModel.ClearAndSelect)
+        index = self.fileModel.index(self.preselectFile)
+        self.ui.files.selectionModel().select(index, QItemSelectionModel.ClearAndSelect)
 
     def browse(self):
         directory = QFileDialog.getExistingDirectory(None, "Select base FITS directory", self.ui.url.text())
