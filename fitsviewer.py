@@ -241,7 +241,7 @@ class FitsViewer(QMainWindow):
             self.ui.url.setText(directory)
 
     def hduListFilterChanged(self, newText):
-        self.hduListProxyModel.setFilterRegExp(QRegExp(newText, Qt.CaseInsensitive, QRegExp.WildcardUnix))
+        self.hduListProxyModel.setFilterRegExp(QRegExp(newText, Qt.CaseInsensitive, QRegExp.RegExp2))
 
     def filesFilterChanged(self, newText):
         self.fileModel.setNameFilters(["*{0}*".format(item) for item in str(newText).split()])
@@ -317,7 +317,7 @@ class FitsViewer(QMainWindow):
         plt.show()
 
     def headerFilterChanged(self, newText):
-        self.hduHeaderProxyModel.setFilterRegExp(QRegExp(newText, Qt.CaseInsensitive, QRegExp.WildcardUnix))
+        self.hduHeaderProxyModel.setFilterRegExp(QRegExp(newText, Qt.CaseInsensitive, QRegExp.RegExp2))
 
     def dataFilterChanged(self, newText):
         self.dataFilterTimer.text = newText

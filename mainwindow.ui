@@ -48,7 +48,7 @@
            <item>
             <widget class="QLineEdit" name="filterFiles">
              <property name="placeholderText">
-              <string>Filter...</string>
+              <string>Filter</string>
              </property>
             </widget>
            </item>
@@ -83,7 +83,7 @@
            <item>
             <widget class="QLineEdit" name="filterSections">
              <property name="placeholderText">
-              <string>Filter...</string>
+              <string>Filter (regular expression)</string>
              </property>
             </widget>
            </item>
@@ -158,7 +158,7 @@
                  </size>
                 </property>
                 <property name="placeholderText">
-                 <string>Filter...</string>
+                 <string>Filter (regular expression)</string>
                 </property>
                </widget>
               </item>
@@ -264,7 +264,7 @@
                  </size>
                 </property>
                 <property name="placeholderText">
-                 <string>Filter...</string>
+                 <string>Filter (only text columns)</string>
                 </property>
                </widget>
               </item>

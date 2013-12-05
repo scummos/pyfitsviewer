@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Thu Dec  5 21:33:59 2013
+# Created: Thu Dec  5 22:44:23 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -203,21 +203,21 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.fileGroup.setTitle(_translate("MainWindow", "Select file", None))
         self.browseDirectoryButton.setText(_translate("MainWindow", "...", None))
-        self.filterFiles.setPlaceholderText(_translate("MainWindow", "Filter...", None))
+        self.filterFiles.setPlaceholderText(_translate("MainWindow", "Filter", None))
         self.clearFileFilter.setText(_translate("MainWindow", "Clear", None))
         self.sectionsGroup.setTitle(_translate("MainWindow", "Sections in file", None))
-        self.filterSections.setPlaceholderText(_translate("MainWindow", "Filter...", None))
+        self.filterSections.setPlaceholderText(_translate("MainWindow", "Filter (regular expression)", None))
         self.clearSectionsFilter.setText(_translate("MainWindow", "Clear", None))
         self.dataGroup.setTitle(_translate("MainWindow", "Section contents", None))
         self.label.setText(_translate("MainWindow", "Header", None))
-        self.filterHeader.setPlaceholderText(_translate("MainWindow", "Filter...", None))
+        self.filterHeader.setPlaceholderText(_translate("MainWindow", "Filter (regular expression)", None))
         self.clearHeaderFilter.setText(_translate("MainWindow", "Clear", None))
         self.label_2.setText(_translate("MainWindow", "Data", None))
         self.indicesButton.setToolTip(_translate("MainWindow", "<html><head/><body><p>Use this index when the selected data field contains an array.</p><p>* to leave array untouched.</p><p>Click to reset to &quot;*&quot;.</p></body></html>", None))
         self.indicesButton.setText(_translate("MainWindow", "Indices:", None))
         self.indicesLineEdit.setText(_translate("MainWindow", "*", None))
         self.plotButton.setText(_translate("MainWindow", "Plot selected", None))
-        self.filterData.setPlaceholderText(_translate("MainWindow", "Filter...", None))
+        self.filterData.setPlaceholderText(_translate("MainWindow", "Filter (only text columns)", None))
         self.clearDataFilter.setText(_translate("MainWindow", "Clear", None))
         self.menuFile.setTitle(_translate("MainWindow", "File", None))
         self.actionOpen.setText(_translate("MainWindow", "Open", None))
