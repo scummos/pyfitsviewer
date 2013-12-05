@@ -1,9 +1,10 @@
 from PyQt4.QtGui import QMainWindow
 from PyQt4.QtGui import QApplication
-from PyQt4.QtGui import QFileSystemModel, QTableView, QColor, QFont, QPushButton
-from PyQt4.QtGui import QSortFilterProxyModel
+from PyQt4.QtGui import QFileSystemModel, QTableView, QColor, QFont, QPushButton, QFileDialog
+from PyQt4.QtGui import QSortFilterProxyModel, QItemSelectionModel
 
-from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QObject, QRegExp, QString, QTimer
+from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QObject, QRegExp, QString, QTimer, QDir
+from PyQt4.QtCore import QFile
 
 import pyfits
 import matplotlib.pyplot as plt
@@ -147,7 +148,6 @@ class DataSortFilterProxyModel(QSortFilterProxyModel):
         return True
 
     def changeFilter(self, newFilter):
-        print "filter changed:", newFilter
         self.filterString = newFilter
         self.invalidateFilter()
 
@@ -177,8 +177,21 @@ class FitsViewer(QMainWindow):
         self.currentFile = None
 
         self.fileModel = QFileSystemModel()
-        startDir = os.getcwd() if len(sys.argv) == 1 else sys.argv[1]
+        if len(sys.argv) == 2 and os.path.isfile(sys.argv[1]):
+            components = sys.argv[1].split('/')
+            startDir = '/'.join(components[:-1])
+            self.preselectFile = components[-1]
+        elif len(sys.argv) and os.path.isdir(sys.argv[1]):
+            startDir = sys.argv[1]
+            self.preselectFile = None
+        else:
+            startDir = os.getcwd()
+            self.preselectFile = None
+        if not os.path.isdir(startDir):
+            startDir = os.getcwd()
         self.fileModel.setRootPath(startDir)
+        self.fileModel.setFilter(QDir.Files | QDir.Dirs | QDir.NoDot)
+        self.fileModel.directoryLoaded.connect(self.filesLoaded)
         self.ui.files.setModel(self.fileModel)
 
         self.ui.url.setText(startDir)
@@ -203,18 +216,43 @@ class FitsViewer(QMainWindow):
 
         self.ui.filterHeader.textChanged.connect(self.headerFilterChanged)
         self.ui.filterData.textChanged.connect(self.dataFilterChanged)
+        self.ui.filterFiles.textChanged.connect(self.filesFilterChanged)
+        self.ui.filterSections.textChanged.connect(self.hduListFilterChanged)
         self.ui.indicesButton.clicked.connect(self.indicesButtonClicked)
+        self.ui.browseDirectoryButton.clicked.connect(self.browse)
 
         self.dataFilterTimer = QTimer()
         self.dataFilterTimer.setSingleShot(True)
         self.dataFilterTimer.setInterval(300)
         self.dataFilterTimer.timeout.connect(self.changeDataFilter)
 
+    def filesLoaded(self, directory):
+        # we only want this to be called once on startup
+        self.fileModel.directoryLoaded.disconnect(self.filesLoaded)
+        if self.preselectFile is None:
+            return
+        # preselect the given file
+        self.ui.files.selectionModel().select(self.fileModel.index(self.preselectFile),
+                                              QItemSelectionModel.ClearAndSelect)
+
+    def browse(self):
+        directory = QFileDialog.getExistingDirectory(None, "Select base FITS directory", self.ui.url.text())
+        if len(directory):
+            self.ui.url.setText(directory)
+
+    def hduListFilterChanged(self, newText):
+        self.hduListProxyModel.setFilterRegExp(QRegExp(newText, Qt.CaseInsensitive, QRegExp.WildcardUnix))
+
+    def filesFilterChanged(self, newText):
+        self.fileModel.setNameFilters(["*{0}*".format(item) for item in str(newText).split()])
+        self.fileModel.setNameFilterDisables(False)
+
     def indicesButtonClicked(self):
         self.ui.indicesLineEdit.setText("*")
 
     def hduSelected(self, item):
-        hduEntry = self.hduListModel.hduEntryForIndex(item)
+        realItem = self.hduListProxyModel.mapToSource(item)
+        hduEntry = self.hduListModel.hduEntryForIndex(realItem)
         self.hduHeaderProxyModel = QSortFilterProxyModel()
         self.hduHeaderProxyModel.setSourceModel(FitsHeaderModel(hduEntry))
         self.hduHeaderProxyModel.setFilterKeyColumn(0)
@@ -228,6 +266,7 @@ class FitsViewer(QMainWindow):
         self.ui.contents.setModel(self.hduDataProxyModel)
         self.ui.contents.resizeColumnsToContents()
         self.ui.contents.verticalHeader().setDefaultSectionSize(20)
+        self.changeDataFilter()
 
     def plotSelection(self):
         if not QApplication.mouseButtons() & Qt.RightButton and not isinstance(self.sender(), QPushButton):
@@ -285,6 +324,8 @@ class FitsViewer(QMainWindow):
         self.dataFilterTimer.start()
 
     def changeDataFilter(self):
+        if not hasattr(self.dataFilterTimer, "text"):
+            return
         self.hduDataProxyModel.changeFilter(self.dataFilterTimer.text)
 
     def fileSelected(self):
@@ -294,15 +335,23 @@ class FitsViewer(QMainWindow):
         except IndexError:
             print "No file selected, huh?"
             return
-        self.currentFile = self.ui.url.text() + "/" + filename
+        newPath = self.ui.url.text() + "/" + filename
+        if os.path.isdir(newPath):
+            # If the item which was clicked was a directory, switch there and exit
+            self.ui.url.setText(os.path.normpath(str(newPath)))
+            return
+        self.currentFile = newPath
         try:
             hdulist = pyfits.open(str(self.currentFile))
         except IOError as e:
             self.ui.statusbar.showMessage("Failed to open {0}: {1}".format(self.currentFile, str(e)), 10000)
             return
+        self.hduListProxyModel = QSortFilterProxyModel()
         self.hduListModel = FitsHeaderListModel(hdulist)
+        self.hduListProxyModel.setSourceModel(self.hduListModel)
+        self.hduListFilterChanged(self.ui.filterSections.text())
 
-        self.ui.sections.setModel(self.hduListModel)
+        self.ui.sections.setModel(self.hduListProxyModel)
         self.ui.sections.resizeColumnsToContents()
         self.ui.sections.selectionModel().currentChanged.connect(self.hduSelected)
         self.ui.header.setModel(None)
