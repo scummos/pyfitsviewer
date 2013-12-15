@@ -16,29 +16,24 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QFormLayout" name="formLayout">
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+     </property>
      <item row="0" column="0">
       <widget class="QLabel" name="subdivLabel">
        <property name="text">
-        <string>Figure subdivision</string>
+        <string>Layout</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QComboBox" name="figureSizeCombo">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+      <widget class="QComboBox" name="layoutCombo">
+       <property name="toolTip">
+        <string>Select a different layout here to show multiple plots side-by-side</string>
        </property>
        <item>
         <property name="text">
          <string>1x1</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>1x2</string>
         </property>
        </item>
        <item>
@@ -48,17 +43,22 @@
        </item>
        <item>
         <property name="text">
+         <string>1x2</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
          <string>2x2</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>1x3</string>
+         <string>3x1</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>3x1</string>
+         <string>1x3</string>
         </property>
        </item>
       </widget>
@@ -70,15 +70,58 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QSpinBox" name="activeSubfigure">
-       <property name="prefix">
-        <string>Figure </string>
+     <item row="2" column="0">
+      <widget class="QLabel" name="keepPreviousLabel">
+       <property name="text">
+        <string>Keep previous curves</string>
        </property>
-       <property name="minimum">
-        <number>1</number>
+       <property name="buddy">
+        <cstring>keepPrevious</cstring>
        </property>
       </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="keepPrevious">
+       <property name="toolTip">
+        <string>Keep the curves already in the plot when drawing a new one</string>
+       </property>
+       <property name="text">
+        <string>Enabled</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QSpinBox" name="activeSubfigure">
+         <property name="toolTip">
+          <string>Select the subplot to be used for the next draw request</string>
+         </property>
+         <property name="prefix">
+          <string>Figure </string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="lockActiveSubfigure">
+         <property name="toolTip">
+          <string>Lock the active subfigure value, so subsequent draw requests are drawn into the same figure</string>
+         </property>
+         <property name="text">
+          <string>Lock</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
@@ -87,6 +130,9 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="toolTip">
+      <string>Reset the layout and clear all plots</string>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

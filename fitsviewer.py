@@ -1,6 +1,6 @@
-from PyQt4.QtGui import QMainWindow, QDialog
-from PyQt4.QtGui import QApplication
-from PyQt4.QtGui import QFileSystemModel, QTableView, QColor, QFont, QPushButton, QFileDialog
+from PyQt4.QtGui import QMainWindow, QDialog, QDialogButtonBox
+from PyQt4.QtGui import QApplication, QAction
+from PyQt4.QtGui import QFileSystemModel, QTableView, QColor, QFont, QPushButton, QFileDialog, QMenu
 from PyQt4.QtGui import QSortFilterProxyModel, QItemSelectionModel
 from PyQt4 import QtGui
 
@@ -13,6 +13,7 @@ from matplotlib.figure import Figure
 
 import pyfits
 import matplotlib.pyplot as plt
+import matplotlib
 from numpy import array as nparray, ndarray
 
 import mainwindow
@@ -23,18 +24,38 @@ import os
 
 RAW_DATA_ROLE = Qt.UserRole + 1
 
+font = {'family' : 'sans',
+        'weight' : 'normal',
+        'size'   : 8}
+
+matplotlib.rc('font', **font)
+
 class MatplotlibCanvas(FigureCanvas):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         self.figure = Figure(figsize=(width, height), dpi=dpi)
         FigureCanvas.__init__(self, self.figure)
 
-        self.axes = self.figure.add_subplot(1, 1, 1)
-        #self.axes.hold(False)
+        self.reset()
         self.setParent(parent)
         FigureCanvas.setSizePolicy(self,
                                    QtGui.QSizePolicy.Expanding,
                                    QtGui.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
+
+    def reset(self):
+        self.figure.clf()
+        self.changeLayout("1x1")
+        self.figure.canvas.draw()
+
+    def changeLayout(self, newLayoutString, activeIndex=1):
+        self.figure.clf()
+        self.figureLayout = map(int, newLayoutString.split('x'))
+        self.layoutSize = self.figureLayout[0] * self.figureLayout[1]
+        self.axes = self.figure.add_subplot(self.figureLayout[0], self.figureLayout[1], activeIndex)
+        self.figure.canvas.draw()
+
+    def selectSubfigure(self, index):
+        self.axes = self.figure.add_subplot(self.figureLayout[0], self.figureLayout[1], index)
 
 class PlotWindow(QDialog):
     def __init__(self):
@@ -47,10 +68,45 @@ class PlotWindow(QDialog):
         self.toolbar = NavigationToolbar(self.canvas, self)
         self.ui.plotContainer.addWidget(self.toolbar)
 
+        self.ui.buttonBox.button(QDialogButtonBox.Reset).clicked.connect(self.reset)
+        self.ui.keepPrevious.clicked.connect(self.updateHold, Qt.QueuedConnection)
+        self.ui.layoutCombo.currentIndexChanged.connect(self.layoutSelected)
+        self.ui.activeSubfigure.valueChanged.connect(self.canvas.selectSubfigure)
+
+        self.resize(800, 600)
+        self.layoutSelected(0)
+
+        self.setWindowTitle("pyfv: plot selection")
+
+    def reset(self):
+        self.canvas.reset()
+        self.ui.activeSubfigure.setValue(0)
+        self.ui.activeSubfigure.setMaximum(1)
+        self.ui.layoutCombo.setCurrentIndex(0)
+        self.updateHold()
+
+    def updateHold(self):
+        self.canvas.axes.hold(self.ui.keepPrevious.isChecked())
+
+    def layoutSelected(self, index):
+        self.canvas.changeLayout(self.ui.layoutCombo.itemText(index))
+        self.ui.activeSubfigure.setMaximum(self.canvas.layoutSize)
+        self.ui.lockActiveSubfigure.setEnabled(self.canvas.layoutSize > 1)
+        self.ui.subfigLabel.setEnabled(self.canvas.layoutSize > 1)
+        self.ui.activeSubfigure.setEnabled(self.canvas.layoutSize > 1)
+        self.updateHold()
+
     def activePlot(self):
         ax = self.canvas.axes
         assert isinstance(ax, plt.Axes)
         return ax
+
+    def makeNextSubplotCurrent(self):
+        if self.ui.lockActiveSubfigure.isChecked():
+            return
+        new = self.ui.activeSubfigure.value() + 1
+        if new <= self.canvas.layoutSize:
+            self.ui.activeSubfigure.setValue(new)
 
 class FitsHeaderListModel(QAbstractTableModel):
     def __init__(self, hdulist):
@@ -312,6 +368,8 @@ class FitsViewer(QMainWindow):
         if self.activePlotWindow is None or self.activePlotWindow.isHidden():
             self.activePlotWindow = PlotWindow()
         p = self.activePlotWindow.activePlot()
+        # needs to be called here so the hold state is correct for the selected subplot
+        self.activePlotWindow.updateHold()
 
         selection = self.ui.contents.selectionModel().selectedIndexes()
 
@@ -351,6 +409,10 @@ class FitsViewer(QMainWindow):
                 # all items are arrays -> plot as curves
                 for item in dataParts:
                     p.plot(item)
+                    # temporarily enable hold so all curves are painted
+                    # this is inside the loop so the first call clears the plot if desired
+                    self.activePlotWindow.canvas.axes.hold(True)
+                self.activePlotWindow.updateHold()
             else:
                 p.plot(nparray(dataParts))
 
@@ -358,6 +420,8 @@ class FitsViewer(QMainWindow):
             self.activePlotWindow.activePlot().figure.canvas.draw()
         else:
             self.activePlotWindow.show()
+
+        self.activePlotWindow.makeNextSubplotCurrent()
 
     def headerFilterChanged(self, newText):
         self.hduHeaderProxyModel.setFilterRegExp(QRegExp(newText, Qt.CaseInsensitive, QRegExp.RegExp2))
