@@ -1,21 +1,56 @@
-from PyQt4.QtGui import QMainWindow
+from PyQt4.QtGui import QMainWindow, QDialog
 from PyQt4.QtGui import QApplication
 from PyQt4.QtGui import QFileSystemModel, QTableView, QColor, QFont, QPushButton, QFileDialog
 from PyQt4.QtGui import QSortFilterProxyModel, QItemSelectionModel
+from PyQt4 import QtGui
 
 from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QObject, QRegExp, QString, QTimer, QDir
 from PyQt4.QtCore import QFile
+
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+from matplotlib.figure import Figure
 
 import pyfits
 import matplotlib.pyplot as plt
 from numpy import array as nparray, ndarray
 
 import mainwindow
+import plotwindow
 
 import sys
 import os
 
 RAW_DATA_ROLE = Qt.UserRole + 1
+
+class MatplotlibCanvas(FigureCanvas):
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        self.figure = Figure(figsize=(width, height), dpi=dpi)
+        FigureCanvas.__init__(self, self.figure)
+
+        self.axes = self.figure.add_subplot(1, 1, 1)
+        #self.axes.hold(False)
+        self.setParent(parent)
+        FigureCanvas.setSizePolicy(self,
+                                   QtGui.QSizePolicy.Expanding,
+                                   QtGui.QSizePolicy.Expanding)
+        FigureCanvas.updateGeometry(self)
+
+class PlotWindow(QDialog):
+    def __init__(self):
+        QDialog.__init__(self)
+        self.ui = plotwindow.Ui_Dialog()
+        self.ui.setupUi(self)
+        self.canvas = MatplotlibCanvas(self)
+        self.ui.plotContainer.addWidget(self.canvas)
+
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        self.ui.plotContainer.addWidget(self.toolbar)
+
+    def activePlot(self):
+        ax = self.canvas.axes
+        assert isinstance(ax, plt.Axes)
+        return ax
 
 class FitsHeaderListModel(QAbstractTableModel):
     def __init__(self, hdulist):
@@ -226,6 +261,8 @@ class FitsViewer(QMainWindow):
         self.dataFilterTimer.setInterval(300)
         self.dataFilterTimer.timeout.connect(self.changeDataFilter)
 
+        self.activePlotWindow = None
+
     def filesLoaded(self, directory):
         # we only want this to be called once on startup
         self.fileModel.directoryLoaded.disconnect(self.filesLoaded)
@@ -271,7 +308,10 @@ class FitsViewer(QMainWindow):
     def plotSelection(self):
         if not QApplication.mouseButtons() & Qt.RightButton and not isinstance(self.sender(), QPushButton):
             return
-        plt.close()
+
+        if self.activePlotWindow is None or self.activePlotWindow.isHidden():
+            self.activePlotWindow = PlotWindow()
+        p = self.activePlotWindow.activePlot()
 
         selection = self.ui.contents.selectionModel().selectedIndexes()
 
@@ -290,8 +330,8 @@ class FitsViewer(QMainWindow):
 
         distinctColsSelected = {item.column() for item in selection}
         if len(selection) == 1:
-            plt.ylabel(getLabel(selection[0].column()))
-            plt.plot(getData(selection[0]))
+            p.set_ylabel(getLabel(selection[0].column()))
+            p.plot(getData(selection[0]))
         elif len(distinctColsSelected) == 2:
             # plot first as x, second as y
             key_col, value_col = distinctColsSelected
@@ -300,21 +340,24 @@ class FitsViewer(QMainWindow):
             if ndarray in map(type, keys) or ndarray in map(type, values):
                 self.ui.statusbar.showMessage("Sorry, don't know how to plot that", 10000)
                 return
-            plt.xlabel(getLabel(key_col))
-            plt.ylabel(getLabel(value_col))
-            plt.plot(keys, values)
+            p.set_xlabel(getLabel(key_col))
+            p.set_ylabel(getLabel(value_col))
+            p.plot(keys, values)
         else:
             dataParts = [getData(index) for index in selection]
             label = ", ".join({getLabel(index.column()) for index in selection})
-            plt.ylabel(label)
-            if False not in [isinstance(p, ndarray) for p in dataParts]:
+            p.set_ylabel(label)
+            if False not in [isinstance(part, ndarray) for part in dataParts]:
                 # all items are arrays -> plot as curves
                 for item in dataParts:
-                    plt.plot(item)
+                    p.plot(item)
             else:
-                plt.plot(nparray(dataParts))
+                p.plot(nparray(dataParts))
 
-        plt.show()
+        if self.activePlotWindow.isVisible():
+            self.activePlotWindow.activePlot().figure.canvas.draw()
+        else:
+            self.activePlotWindow.show()
 
     def headerFilterChanged(self, newText):
         self.hduHeaderProxyModel.setFilterRegExp(QRegExp(newText, Qt.CaseInsensitive, QRegExp.RegExp2))
