@@ -110,11 +110,36 @@
        </item>
        <item>
         <widget class="QPushButton" name="lockActiveSubfigure">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="toolTip">
           <string>Lock the active subfigure value, so subsequent draw requests are drawn into the same figure</string>
          </property>
          <property name="text">
           <string>Lock</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="cycleSubfigures">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Activate the first subfigure after something was drawn into the last one</string>
+         </property>
+         <property name="text">
+          <string>Cycle</string>
          </property>
          <property name="checkable">
           <bool>true</bool>

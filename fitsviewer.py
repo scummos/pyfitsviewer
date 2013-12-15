@@ -93,6 +93,7 @@ class PlotWindow(QDialog):
         self.ui.activeSubfigure.setMaximum(self.canvas.layoutSize)
         self.ui.lockActiveSubfigure.setEnabled(self.canvas.layoutSize > 1)
         self.ui.subfigLabel.setEnabled(self.canvas.layoutSize > 1)
+        self.ui.cycleSubfigures.setEnabled(self.canvas.layoutSize > 1)
         self.ui.activeSubfigure.setEnabled(self.canvas.layoutSize > 1)
         self.updateHold()
 
@@ -107,6 +108,8 @@ class PlotWindow(QDialog):
         new = self.ui.activeSubfigure.value() + 1
         if new <= self.canvas.layoutSize:
             self.ui.activeSubfigure.setValue(new)
+        elif self.ui.cycleSubfigures.isChecked():
+            self.ui.activeSubfigure.setValue(1)
 
 class FitsHeaderListModel(QAbstractTableModel):
     def __init__(self, hdulist):

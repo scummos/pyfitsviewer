@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'plotwindow.ui'
 #
-# Created: Sun Dec 15 17:02:15 2013
+# Created: Sun Dec 15 17:10:24 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -61,9 +61,23 @@ class Ui_Dialog(object):
         self.activeSubfigure.setObjectName(_fromUtf8("activeSubfigure"))
         self.horizontalLayout.addWidget(self.activeSubfigure)
         self.lockActiveSubfigure = QtGui.QPushButton(Dialog)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lockActiveSubfigure.sizePolicy().hasHeightForWidth())
+        self.lockActiveSubfigure.setSizePolicy(sizePolicy)
         self.lockActiveSubfigure.setCheckable(True)
         self.lockActiveSubfigure.setObjectName(_fromUtf8("lockActiveSubfigure"))
         self.horizontalLayout.addWidget(self.lockActiveSubfigure)
+        self.cycleSubfigures = QtGui.QPushButton(Dialog)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.cycleSubfigures.sizePolicy().hasHeightForWidth())
+        self.cycleSubfigures.setSizePolicy(sizePolicy)
+        self.cycleSubfigures.setCheckable(True)
+        self.cycleSubfigures.setObjectName(_fromUtf8("cycleSubfigures"))
+        self.horizontalLayout.addWidget(self.cycleSubfigures)
         self.formLayout.setLayout(1, QtGui.QFormLayout.FieldRole, self.horizontalLayout)
         self.verticalLayout.addLayout(self.formLayout)
         self.plotContainer = QtGui.QVBoxLayout()
@@ -99,5 +113,7 @@ class Ui_Dialog(object):
         self.activeSubfigure.setPrefix(_translate("Dialog", "Figure ", None))
         self.lockActiveSubfigure.setToolTip(_translate("Dialog", "Lock the active subfigure value, so subsequent draw requests are drawn into the same figure", None))
         self.lockActiveSubfigure.setText(_translate("Dialog", "Lock", None))
+        self.cycleSubfigures.setToolTip(_translate("Dialog", "Activate the first subfigure after something was drawn into the last one", None))
+        self.cycleSubfigures.setText(_translate("Dialog", "Cycle", None))
         self.buttonBox.setToolTip(_translate("Dialog", "Reset the layout and clear all plots", None))
 
