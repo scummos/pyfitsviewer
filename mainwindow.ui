@@ -236,7 +236,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="plotButton">
+               <widget class="QToolButton" name="plotButton">
                 <property name="text">
                  <string>Plot selected</string>
                 </property>

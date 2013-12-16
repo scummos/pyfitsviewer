@@ -1,5 +1,5 @@
 from PyQt4.QtGui import QMainWindow, QDialog, QDialogButtonBox
-from PyQt4.QtGui import QApplication, QAction
+from PyQt4.QtGui import QApplication, QAction, QToolButton
 from PyQt4.QtGui import QFileSystemModel, QTableView, QColor, QFont, QPushButton, QFileDialog, QMenu
 from PyQt4.QtGui import QSortFilterProxyModel, QItemSelectionModel
 from PyQt4 import QtGui
@@ -29,6 +29,13 @@ font = {'family' : 'sans',
         'size'   : 8}
 
 matplotlib.rc('font', **font)
+
+plotActions = [
+    ("Plot selection", {}),
+    ("Plot with points", {"marker": "o", "linestyle": "none", "markersize": 1}),
+    ("Plot with dashed line", {"linestyle": "dashed"}),
+    ("Plot with thick line", {"linewidth": 3}),
+]
 
 class MatplotlibCanvas(FigureCanvas):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
@@ -305,7 +312,16 @@ class FitsViewer(QMainWindow):
         self.ui.splitter_2.setSizes([200, 500])
         self.ui.splitter_3.setSizes([200, 500])
 
-        self.ui.plotButton.pressed.connect(self.plotSelection)
+        menu = QMenu()
+        for actionName, actionArgs in plotActions:
+            action = QAction(actionName, menu)
+            action.setProperty("args", actionArgs)
+            action.triggered.connect(self.plotSelection)
+            menu.addAction(action)
+            if not self.ui.plotButton.defaultAction():
+                self.ui.plotButton.setDefaultAction(action)
+        self.ui.plotButton.setMenu(menu)
+
         self.ui.contents.pressed.connect(self.plotSelection)
 
         self.ui.filterHeader.textChanged.connect(self.headerFilterChanged)
@@ -365,8 +381,16 @@ class FitsViewer(QMainWindow):
         self.changeDataFilter()
 
     def plotSelection(self):
-        if not QApplication.mouseButtons() & Qt.RightButton and not isinstance(self.sender(), QPushButton):
+        if not QApplication.mouseButtons() & Qt.RightButton and not isinstance(self.sender(), QPushButton) \
+           and not isinstance(self.sender(), QAction):
             return
+
+        plotArgs = {}
+        if hasattr(self.sender(), "text"):
+            try:
+                plotArgs = filter(lambda x: x[0] == self.sender().text(), plotActions)[0][1]
+            except IndexError:
+                pass
 
         if self.activePlotWindow is None or self.activePlotWindow.isHidden():
             self.activePlotWindow = PlotWindow()
@@ -392,7 +416,7 @@ class FitsViewer(QMainWindow):
         distinctColsSelected = {item.column() for item in selection}
         if len(selection) == 1:
             p.set_ylabel(getLabel(selection[0].column()))
-            p.plot(getData(selection[0]))
+            p.plot(getData(selection[0]), **plotArgs)
         elif len(distinctColsSelected) == 2:
             # plot first as x, second as y
             key_col, value_col = distinctColsSelected
@@ -403,7 +427,7 @@ class FitsViewer(QMainWindow):
                 return
             p.set_xlabel(getLabel(key_col))
             p.set_ylabel(getLabel(value_col))
-            p.plot(keys, values)
+            p.plot(keys, values, **plotArgs)
         else:
             dataParts = [getData(index) for index in selection]
             label = ", ".join({getLabel(index.column()) for index in selection})
@@ -411,13 +435,13 @@ class FitsViewer(QMainWindow):
             if False not in [isinstance(part, ndarray) for part in dataParts]:
                 # all items are arrays -> plot as curves
                 for item in dataParts:
-                    p.plot(item)
+                    p.plot(item, **plotArgs)
                     # temporarily enable hold so all curves are painted
                     # this is inside the loop so the first call clears the plot if desired
                     self.activePlotWindow.canvas.axes.hold(True)
                 self.activePlotWindow.updateHold()
             else:
-                p.plot(nparray(dataParts))
+                p.plot(nparray(dataParts), **plotArgs)
 
         if self.activePlotWindow.isVisible():
             self.activePlotWindow.activePlot().figure.canvas.draw()

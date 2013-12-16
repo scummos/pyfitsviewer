@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Thu Dec  5 22:44:23 2013
+# Created: Mon Dec 16 14:51:19 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -148,7 +148,7 @@ class Ui_MainWindow(object):
         self.indicesLineEdit.setMaximumSize(QtCore.QSize(25, 16777215))
         self.indicesLineEdit.setObjectName(_fromUtf8("indicesLineEdit"))
         self.horizontalLayout_2.addWidget(self.indicesLineEdit)
-        self.plotButton = QtGui.QPushButton(self.layoutWidget1)
+        self.plotButton = QtGui.QToolButton(self.layoutWidget1)
         self.plotButton.setObjectName(_fromUtf8("plotButton"))
         self.horizontalLayout_2.addWidget(self.plotButton)
         spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
