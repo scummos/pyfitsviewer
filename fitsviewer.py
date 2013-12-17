@@ -321,6 +321,7 @@ class FitsViewer(QMainWindow):
             if not self.ui.plotButton.defaultAction():
                 self.ui.plotButton.setDefaultAction(action)
         self.ui.plotButton.setMenu(menu)
+        self.ui.indicesCheckbox.toggled.connect(self.indicesToggled)
 
         self.ui.contents.pressed.connect(self.plotSelection)
 
@@ -328,7 +329,6 @@ class FitsViewer(QMainWindow):
         self.ui.filterData.textChanged.connect(self.dataFilterChanged)
         self.ui.filterFiles.textChanged.connect(self.filesFilterChanged)
         self.ui.filterSections.textChanged.connect(self.hduListFilterChanged)
-        self.ui.indicesButton.clicked.connect(self.indicesButtonClicked)
         self.ui.browseDirectoryButton.clicked.connect(self.browse)
 
         self.dataFilterTimer = QTimer()
@@ -337,6 +337,9 @@ class FitsViewer(QMainWindow):
         self.dataFilterTimer.timeout.connect(self.changeDataFilter)
 
         self.activePlotWindow = None
+
+    def indicesToggled(self, state):
+        self.ui.arrayIndices.setEnabled(state)
 
     def filesLoaded(self, directory):
         # we only want this to be called once on startup
@@ -358,9 +361,6 @@ class FitsViewer(QMainWindow):
     def filesFilterChanged(self, newText):
         self.fileModel.setNameFilters(["*{0}*".format(item) for item in str(newText).split()])
         self.fileModel.setNameFilterDisables(False)
-
-    def indicesButtonClicked(self):
-        self.ui.indicesLineEdit.setText("*")
 
     def hduSelected(self, item):
         realItem = self.hduListProxyModel.mapToSource(item)
@@ -400,15 +400,18 @@ class FitsViewer(QMainWindow):
 
         selection = self.ui.contents.selectionModel().selectedIndexes()
 
-        arrayFields = self.ui.indicesLineEdit.text()
+        if self.ui.indicesCheckbox.isChecked():
+            arrayFields = self.ui.arrayIndices.value()
+        else:
+            arrayFields = "*"
         def getData(index):
             index = self.hduDataProxyModel.mapToSource(index)
             data = self.hduDataProxyModel.sourceModel().data(index, RAW_DATA_ROLE)
             if type(data) == ndarray and arrayFields != "*":
                 try:
-                    return data[int(arrayFields)]
+                    return data[arrayFields]
                 except ValueError:
-                    self.ui.statusbar.showMessage("whops, non-integer in array index field", 10000)
+                    self.ui.statusbar.showMessage("out-of-range value in array index field", 10000)
             return data
         def getLabel(column):
             return str(self.hduDataProxyModel.sourceModel().headerData(column, Qt.Horizontal, Qt.DisplayRole))

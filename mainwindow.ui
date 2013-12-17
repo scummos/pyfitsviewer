@@ -213,36 +213,6 @@
                </spacer>
               </item>
               <item>
-               <widget class="QPushButton" name="indicesButton">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use this index when the selected data field contains an array.&lt;/p&gt;&lt;p&gt;* to leave array untouched.&lt;/p&gt;&lt;p&gt;Click to reset to &amp;quot;*&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="text">
-                 <string>Indices:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="indicesLineEdit">
-                <property name="maximumSize">
-                 <size>
-                  <width>25</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>*</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QToolButton" name="plotButton">
-                <property name="text">
-                 <string>Plot selected</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <spacer name="horizontalSpacer_4">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -278,6 +248,63 @@
              </layout>
             </item>
             <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string>Plot data:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QToolButton" name="plotButton">
+                <property name="text">
+                 <string>Plot selected</string>
+                </property>
+                <property name="popupMode">
+                 <enum>QToolButton::MenuButtonPopup</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="indicesCheckbox">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable to use only one index when the selected data field contains an array.&lt;/p&gt;&lt;p&gt;Disable to leave array untouched before passing it to the plotter.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Use only array index:</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="arrayIndices">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="prefix">
+                 <string>Ch: </string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
              <widget class="QTableView" name="contents"/>
             </item>
            </layout>
@@ -296,7 +323,7 @@
      <x>0</x>
      <y>0</y>
      <width>902</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -474,22 +501,6 @@
     <hint type="destinationlabel">
      <x>717</x>
      <y>347</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionReset</sender>
-   <signal>triggered()</signal>
-   <receiver>indicesButton</receiver>
-   <slot>click()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>447</x>
-     <y>348</y>
     </hint>
    </hints>
   </connection>
