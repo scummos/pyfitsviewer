@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-z
 
 from PyQt4.QtGui import QMainWindow, QDialog, QDialogButtonBox
 from PyQt4.QtGui import QApplication, QAction, QToolButton
@@ -6,7 +7,7 @@ from PyQt4.QtGui import QFileSystemModel, QTableView, QColor, QFont, QPushButton
 from PyQt4.QtGui import QSortFilterProxyModel, QItemSelectionModel
 from PyQt4 import QtGui
 
-from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QObject, QRegExp, QString, QTimer, QDir
+from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QObject, QRegExp, QTimer, QDir
 from PyQt4.QtCore import QFile
 
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
@@ -58,7 +59,7 @@ class MatplotlibCanvas(FigureCanvas):
 
     def changeLayout(self, newLayoutString, activeIndex=1):
         self.figure.clf()
-        self.figureLayout = map(int, newLayoutString.split('x'))
+        self.figureLayout = [int(x) for x in newLayoutString.split('x')]
         self.layoutSize = self.figureLayout[0] * self.figureLayout[1]
         self.axes = self.figure.add_subplot(self.figureLayout[0], self.figureLayout[1], activeIndex)
         self.figure.canvas.draw()
@@ -145,7 +146,7 @@ class FitsHeaderListModel(QAbstractTableModel):
                 return "Shape"
         if role == Qt.DisplayRole and orientation == Qt.Vertical:
             # zero indexing
-            return QAbstractTableModel.headerData(self, section, orientation, role).toInt()[0] - 1
+            return QAbstractTableModel.headerData(self, section, orientation, role) - 1
         return QAbstractTableModel.headerData(self, section, orientation, role)
 
     def data(self, index, role):
@@ -181,6 +182,9 @@ class FitsHeaderModel(QAbstractTableModel):
     def __init__(self, hduentry):
         QAbstractTableModel.__init__(self)
         self.header = hduentry.header
+        self.keys = list(self.header.keys())
+        self.values = list(self.header.values())
+        self.comments = list(self.header.comments)
 
     def rowCount(self, parent):
         return len(self.header)
@@ -201,9 +205,9 @@ class FitsHeaderModel(QAbstractTableModel):
     def data(self, index, role):
         if role == Qt.DisplayRole:
             if index.column() == 0:
-                return self.header.keys()[index.row()]
+                return self.keys[index.row()]
             if index.column() == 1:
-                return self.header.values()[index.row()]
+                return self.values[index.row()]
             if index.column() == 2:
                 try:
                     return self.header.comments[self.header.keys()[index.row()]]
@@ -473,9 +477,9 @@ class FitsViewer(QMainWindow):
     def fileSelected(self):
         files = self.ui.files.selectionModel().selectedIndexes()
         try:
-            filename = files[0].data(Qt.DisplayRole).toString()
+            filename = files[0].data(Qt.DisplayRole)
         except IndexError:
-            print "No file selected, huh?"
+            print("No file selected, huh?")
             return
         newPath = self.ui.url.text() + "/" + filename
         if os.path.isdir(newPath):
