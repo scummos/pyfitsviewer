@@ -188,7 +188,10 @@ class FitsHeaderModel(QAbstractTableModel):
         self.header = hduentry.header
         self.keys = list(self.header.keys())
         self.values = list(self.header.values())
-        self.comments = list(self.header.comments)
+        try:
+            self.comments = list(self.header.comments)
+        except AttributeError:
+            self.comments = list()
 
     def rowCount(self, parent):
         return len(self.header)
