@@ -146,7 +146,11 @@ class FitsHeaderListModel(QAbstractTableModel):
                 return "Shape"
         if role == Qt.DisplayRole and orientation == Qt.Vertical:
             # zero indexing
-            return QAbstractTableModel.headerData(self, section, orientation, role) - 1
+            try:
+                line = QAbstractTableModel.headerData(self, section, orientation, role).toInt()[0]
+            except AttributeError:
+                line = QAbstractTableModel.headerData(self, section, orientation, role)
+            return line - 1
         return QAbstractTableModel.headerData(self, section, orientation, role)
 
     def data(self, index, role):
@@ -477,7 +481,9 @@ class FitsViewer(QMainWindow):
     def fileSelected(self):
         files = self.ui.files.selectionModel().selectedIndexes()
         try:
-            filename = files[0].data(Qt.DisplayRole)
+            filename = str(files[0].data(Qt.DisplayRole).toString())
+        except AttributeError:
+            filename = str(files[0].data(Qt.DisplayRole))
         except IndexError:
             print("No file selected, huh?")
             return
