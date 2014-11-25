@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from PyQt4.QtGui import QMainWindow, QDialog, QDialogButtonBox
 from PyQt4.QtGui import QApplication, QAction, QToolButton
 from PyQt4.QtGui import QFileSystemModel, QTableView, QColor, QFont, QPushButton, QFileDialog, QMenu
@@ -203,7 +205,10 @@ class FitsHeaderModel(QAbstractTableModel):
             if index.column() == 1:
                 return self.header.values()[index.row()]
             if index.column() == 2:
-                return self.header.comments[self.header.keys()[index.row()]]
+                try:
+                    return self.header.comments[self.header.keys()[index.row()]]
+                except AttributeError:
+                    return str()
 
         if role == Qt.ForegroundRole:
             if index.column() == 1:
