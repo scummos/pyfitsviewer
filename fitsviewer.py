@@ -1,13 +1,21 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-z
 
+import sip
+API_NAMES = [
+    'QDate', 'QDateTime', 'QString', 'QTextStream', 'QTime', 'QUrl', 'QVariant'
+    ]
+API_VERSION = 2
+for name in API_NAMES:
+    sip.setapi(name, API_VERSION)
+
 from PyQt4.QtGui import QMainWindow, QDialog, QDialogButtonBox
 from PyQt4.QtGui import QApplication, QAction, QToolButton
 from PyQt4.QtGui import QFileSystemModel, QTableView, QColor, QFont, QPushButton, QFileDialog, QMenu
 from PyQt4.QtGui import QSortFilterProxyModel, QItemSelectionModel
 from PyQt4 import QtGui
 
-from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QObject, QRegExp, QTimer, QDir
+from PyQt4.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QObject, QRegExp, QTimer, QDir, QSettings
 from PyQt4.QtCore import QFile
 
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
@@ -292,6 +300,7 @@ class FitsViewer(QMainWindow):
         self.ui.setupUi(self)
 
         self.currentFile = None
+        self._do_read_settings = True
 
         self.fileModel = QFileSystemModel()
         if len(sys.argv) == 2 and os.path.isfile(sys.argv[1]):
@@ -324,9 +333,9 @@ class FitsViewer(QMainWindow):
         self.ui.header.setStyleSheet("QTableView::item { padding: 8px }")
         self.ui.contents.setStyleSheet("QTableView::item { padding: 8px }")
 
-        self.ui.splitter.setSizes([200, 500])
-        self.ui.splitter_2.setSizes([200, 500])
-        self.ui.splitter_3.setSizes([200, 500])
+        # self.ui.splitter.setSizes([200, 500])
+        # self.ui.splitter_2.setSizes([200, 500])
+        # self.ui.splitter_3.setSizes([200, 500])
 
         menu = QMenu()
         for actionName, actionArgs in plotActions:
@@ -517,6 +526,61 @@ class FitsViewer(QMainWindow):
         index = self.fileModel.setRootPath(self.ui.url.text())
         self.ui.files.setRootIndex(index)
         self.setWindowTitle("pyfv: {0}".format(self.ui.url.text()))
+
+    def closeEvent(self, event):
+
+        self.write_settings()
+        QtGui.QMainWindow.closeEvent(self, event)
+
+    def write_settings(self):
+        '''
+        Store settings (including layout and window geometry).
+        '''
+
+        settings = QSettings('RadioTeleskopEffelsberg', 'pyfv')
+        settings.setValue(
+            'splitter/splitterSizes', self.ui.splitter.saveState()
+            )
+        settings.setValue(
+            'splitter_2/splitterSizes', self.ui.splitter_2.saveState()
+            )
+        settings.setValue(
+            'splitter_3/splitterSizes', self.ui.splitter_3.saveState()
+            )
+        settings.setValue('pyfv/geometry', self.saveGeometry())
+        settings.setValue('pyfv/windowState', self.saveState())
+
+    def read_settings(self):
+        '''
+        Read stored settings (including layout and window geometry).
+        '''
+
+        settings = QSettings('RadioTeleskopEffelsberg', 'pyfv')
+
+        self.ui.splitter.restoreState(
+            settings.value('splitter/splitterSizes')
+            )
+        self.ui.splitter_2.restoreState(
+            settings.value('splitter_2/splitterSizes')
+            )
+        self.ui.splitter_3.restoreState(
+            settings.value('splitter_3/splitterSizes')
+            )
+        self.restoreGeometry(settings.value('pyfv/geometry'))
+        self.restoreState(settings.value('pyfv/windowState'))
+
+    def showEvent(self, se):
+        '''
+        it is necessary to perform "readSettings" after all of the GUI elements
+        were processed and the first showevent occurs
+        otherwise not all settings will be processed correctly
+        '''
+
+        QtGui.QMainWindow.showEvent(self, se)
+
+        if self._do_read_settings:
+            self.read_settings()
+            self._do_read_settings = False
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

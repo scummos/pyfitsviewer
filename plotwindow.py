@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'plotwindow.ui'
 #
-# Created: Mon Dec 16 14:50:58 2013
-#      by: PyQt4 UI code generator 4.10.3
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 

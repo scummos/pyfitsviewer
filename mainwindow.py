@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Tue Dec 17 09:59:17 2013
-#      by: PyQt4 UI code generator 4.10.3
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,7 +25,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(902, 633)
+        MainWindow.resize(1088, 828)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.centralwidget)
@@ -90,15 +89,14 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addWidget(self.sections)
         self.dataGroup = QtGui.QGroupBox(self.splitter_3)
         self.dataGroup.setObjectName(_fromUtf8("dataGroup"))
-        self.verticalLayout_6 = QtGui.QVBoxLayout(self.dataGroup)
-        self.verticalLayout_6.setObjectName(_fromUtf8("verticalLayout_6"))
+        self.gridLayout = QtGui.QGridLayout(self.dataGroup)
+        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.splitter_2 = QtGui.QSplitter(self.dataGroup)
         self.splitter_2.setOrientation(QtCore.Qt.Vertical)
         self.splitter_2.setObjectName(_fromUtf8("splitter_2"))
         self.layoutWidget = QtGui.QWidget(self.splitter_2)
         self.layoutWidget.setObjectName(_fromUtf8("layoutWidget"))
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.layoutWidget)
-        self.verticalLayout_5.setMargin(0)
         self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
         self.horizontalLayout_3 = QtGui.QHBoxLayout()
         self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
@@ -125,11 +123,7 @@ class Ui_MainWindow(object):
         self.layoutWidget1 = QtGui.QWidget(self.splitter_2)
         self.layoutWidget1.setObjectName(_fromUtf8("layoutWidget1"))
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.layoutWidget1)
-        self.verticalLayout_2.setMargin(0)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.verticalLayout_7 = QtGui.QVBoxLayout()
-        self.verticalLayout_7.setObjectName(_fromUtf8("verticalLayout_7"))
-        self.verticalLayout_2.addLayout(self.verticalLayout_7)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
         self.label_2 = QtGui.QLabel(self.layoutWidget1)
@@ -139,10 +133,8 @@ class Ui_MainWindow(object):
         self.label_2.setFont(font)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.horizontalLayout_2.addWidget(self.label_2)
-        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
-        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem2)
         self.filterData = QtGui.QLineEdit(self.layoutWidget1)
         self.filterData.setMaximumSize(QtCore.QSize(200, 16777215))
         self.filterData.setObjectName(_fromUtf8("filterData"))
@@ -168,17 +160,17 @@ class Ui_MainWindow(object):
         self.arrayIndices.setEnabled(False)
         self.arrayIndices.setObjectName(_fromUtf8("arrayIndices"))
         self.horizontalLayout_6.addWidget(self.arrayIndices)
-        spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_6.addItem(spacerItem3)
+        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_6.addItem(spacerItem2)
         self.verticalLayout_2.addLayout(self.horizontalLayout_6)
         self.contents = QtGui.QTableView(self.layoutWidget1)
         self.contents.setObjectName(_fromUtf8("contents"))
         self.verticalLayout_2.addWidget(self.contents)
-        self.verticalLayout_6.addWidget(self.splitter_2)
+        self.gridLayout.addWidget(self.splitter_2, 0, 0, 1, 1)
         self.verticalLayout_3.addWidget(self.splitter_3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 902, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1088, 27))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
